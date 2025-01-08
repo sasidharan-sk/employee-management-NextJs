@@ -1,4 +1,3 @@
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import Image from "next/image";
 
 export default function Home() {
@@ -32,8 +31,6 @@ export default function Home() {
       <footer className="row-start-3 text-sm text-gray-500">
         © {new Date().getFullYear()} Employee Manager. All rights reserved.
       </footer>
-
-      <ReactQueryDevtools initialIsOpen={false} />
     </div>
   );
 }

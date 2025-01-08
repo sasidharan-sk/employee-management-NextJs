@@ -5,6 +5,8 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 
@@ -18,10 +20,13 @@ export default function TanstackTable() {
       header: "Employee ID",
       cell: (info) => info.getValue(),
     }),
-    columnHelper.accessor((row) => `${row.firstName} ${row.lastName}`, {
-      id: "fullName",
-      header: "Full Name",
-      cell: (info) => <b>{info.getValue()}</b>,
+    columnHelper.accessor("firstName", {
+      header: "First Name",
+      cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("lastName", {
+      header: "Last Name",
+      cell: (info) => info.getValue(),
     }),
     columnHelper.accessor("gender", {
       header: "Gender",
@@ -55,6 +60,8 @@ export default function TanstackTable() {
     data: data?.employees || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   if (isPending)

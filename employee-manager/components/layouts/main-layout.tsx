@@ -1,4 +1,4 @@
-import { ChildrenProp } from "@/config/commonConfig";
+import { ChildrenProp } from "@/types/commonConfig";
 
 export default function MainLayout({ children }: ChildrenProp) {
   return (

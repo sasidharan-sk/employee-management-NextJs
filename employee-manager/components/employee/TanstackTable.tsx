@@ -17,7 +17,7 @@ export default function TanstackTable() {
 
   const columns = [
     columnHelper.accessor((_, row) => row + 1, {
-      header: "Index",
+      header: "#",
       cell: (info) => info.getValue(),
     }),
     // columnHelper.accessor("empId", {

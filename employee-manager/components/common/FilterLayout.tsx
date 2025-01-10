@@ -27,17 +27,41 @@ import {
   SelectValue,
 } from "../ui/select";
 
+import { Button } from "../ui/button";
+
+import { useCallback, useRef, useState } from "react";
+import { useSearchParams } from "next/navigation";
+
 const FilterLayout = () => {
+  const [searchVal, setSearchVal] = useState("");
+  const [selectedColumn, setSelectedColumn] = useState("");
+  const OnSearchValue = useCallback((e: string) => {
+    setSearchVal(e);
+  }, []);
+
+  const SelectedColumnValue = useCallback((value: string) => {
+    setSelectedColumn(value);
+  }, []);
+
+  const ToggleWindowPopup = useCallback(() => {
+    window.open(
+      "/popup/add-employee",
+      "_blank",
+      "resizable=yes,top=100,left=200,width=1000,height=700"
+    );
+  }, []);
+
   return (
-    <div
-      className="flex items-center  gap-6
-        md:justify-start"
-    >
-      {/* Search Bar Container */}
-      <div>
-        <Command className="rounded-lg border shadow-sm md:min-w-[450px]">
-          <CommandInput placeholder="Type a command or search..." />
-          {/* <CommandList>
+    <div className="flex flex-wrap items-center justify-between gap-5 md:justify-between">
+      <div className="flex items-center justify-start gap-6">
+        {/* Search Bar Container */}
+        <div>
+          <Command className="rounded-lg border shadow-sm md:min-w-[30vw]">
+            <CommandInput
+              onValueChange={(e) => OnSearchValue(e)}
+              placeholder="Type a command or search..."
+            />
+            {/* <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup heading="Suggestions">
               <CommandItem>
@@ -72,23 +96,34 @@ const FilterLayout = () => {
               </CommandItem>
             </CommandGroup>
           </CommandList> */}
-        </Command>
+          </Command>
+        </div>
+        {/* Dropdown for filtering */}
+        <div>
+          <Select onValueChange={(val) => SelectedColumnValue(val)}>
+            <SelectTrigger className="md:w-[200px] shadow-sm h-11">
+              <SelectValue placeholder="Select a column" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="firstName">First Name</SelectItem>
+                <SelectItem value="lastName">Last Name</SelectItem>
+                <SelectItem value="gender">Gender</SelectItem>
+                <SelectItem value="email">Email</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
-      {/* Dropdown for filtering */}
-      <div>
-        <Select>
-          <SelectTrigger className="md:w-[200px] shadow-sm h-11">
-            <SelectValue placeholder="Select a column" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="firstName">First Name</SelectItem>
-              <SelectItem value="lastName">Last Name</SelectItem>
-              <SelectItem value="gender">Gender</SelectItem>
-              <SelectItem value="email">Email</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+      {/* Add Employee button */}
+      <div className="flex items-center justify-end">
+        <Button
+          onClick={() => ToggleWindowPopup()}
+          className="bg-blue-500 text-white hover:bg-blue-600 hover:text-white"
+          variant="outline"
+        >
+          Add New Employee
+        </Button>
       </div>
     </div>
   );

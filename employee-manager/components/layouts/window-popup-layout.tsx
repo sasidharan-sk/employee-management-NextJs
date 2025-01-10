@@ -1,14 +1,14 @@
 "use client";
-import { ChildrenProp } from "@/types/commonConfig";
 import { Button } from "../ui/button";
-import { useCallback } from "react";
-import { addEmployeeSchema } from "@/forms-schema/add-employee-schema";
-import { z } from "zod";
+import { useCallback, useId } from "react";
+import AddEmployeeForm from "../add-employee/add-employee-form";
 
-const WindowPopupLayout: React.FC<ChildrenProp> = ({ children }) => {
+const WindowPopupLayout = () => {
   const handleClosePopup = useCallback(() => {
     window.close();
   }, []);
+
+  const addEmployeeFormId = useId();
 
   return (
     <>
@@ -17,6 +17,9 @@ const WindowPopupLayout: React.FC<ChildrenProp> = ({ children }) => {
           <div className="flex flex-auto items-center justify-end gap-4">
             <div>
               <Button
+                id="add-employee-button"
+                form={addEmployeeFormId}
+                type="submit"
                 className="bg-blue-500 text-white hover:bg-blue-600 hover:text-white"
                 variant="outline"
               >
@@ -35,7 +38,7 @@ const WindowPopupLayout: React.FC<ChildrenProp> = ({ children }) => {
           </div>
         </div>
         <div className="container mx-auto bg-white shadow-2xl drop-shadow-2xl">
-          <>{children}</>
+          <AddEmployeeForm formId={addEmployeeFormId} />
         </div>
       </div>
     </>

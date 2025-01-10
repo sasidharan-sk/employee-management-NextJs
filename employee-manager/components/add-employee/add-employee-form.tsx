@@ -29,8 +29,16 @@ import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import useFetchAllDepartments from "@/customhooks/departments/useFetchAllDepartments";
+import { ApiDepartmentResponse } from "@/types/department/get-department";
 
-export default function AddEmployeeForm() {
+type AddEmployeeFormProps = {
+  formId: string;
+};
+export default function AddEmployeeForm({ formId }: AddEmployeeFormProps) {
+  const { data } = useFetchAllDepartments();
+
+  console.log(formId);
   const addEmployeeFormDefaultValues = useMemo(() => {
     return {
       firstName: "",
@@ -58,6 +66,7 @@ export default function AddEmployeeForm() {
       <form
         onSubmit={addEmployeeForm.handleSubmit(onSubmit)}
         className="space-y-8"
+        id={formId}
       >
         <div className="grid grid-cols-1 gap-4 p-6 sm:grid sm:grid-cols-2 sm:gap-4 sm:p-8">
           {/* First Name */}
@@ -127,10 +136,25 @@ export default function AddEmployeeForm() {
                       <SelectValue placeholder="Select a department" />
                     </SelectTrigger>
                   </FormControl>
-                  <SelectContent>
-                    <SelectItem value="1">HR</SelectItem>
-                    <SelectItem value="2">Engineering</SelectItem>
-                    <SelectItem value="3">Marketing</SelectItem>
+                  <SelectContent
+                    className={data && data.length > 0 ? "h-64" : ""}
+                  >
+                    {data && data.length > 0 ? (
+                      data?.map(
+                        (department: ApiDepartmentResponse, index: number) => (
+                          <SelectItem
+                            key={index}
+                            value={department.departmentId}
+                          >
+                            {department.departmentName}
+                          </SelectItem>
+                        )
+                      )
+                    ) : (
+                      <SelectItem value={"sdf"} disabled>
+                        No records found
+                      </SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -168,9 +192,14 @@ export default function AddEmployeeForm() {
                 <FormControl>
                   <Input
                     className="w-10/12"
-                    type="tel"
+                    type="number"
+                    min={0}
+                    value={field.value || ""}
+                    onChange={(e) => {
+                      const numericValue = Number(e.target.value);
+                      field.onChange(isNaN(numericValue) ? null : numericValue);
+                    }}
                     placeholder="1234567890"
-                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -234,7 +263,7 @@ export default function AddEmployeeForm() {
                       <Button
                         variant={"outline"}
                         className={cn(
-                          "w-10/12 pl-3 text-left font-normal",
+                          "w-10/12  pl-3 text-left font-normal",
                           !field.value && "text-muted-foreground"
                         )}
                       >

@@ -2,10 +2,10 @@ import { z } from "zod";
 
 export const addEmployeeSchema = z.object({
   firstName: z.string().min(4, {
-    message: "Please enter your full name",
+    message: "First name must be atleast 4 characters",
   }),
   lastName: z.string().min(2, {
-    message: "Subject must be at least 2 characters",
+    message: "Last name must be at least 2 characters",
   }),
   gender: z.string().min(4, {
     message: "Please select the gender",
@@ -14,8 +14,8 @@ export const addEmployeeSchema = z.object({
     message: "Date of birth cannot be in future",
   }),
   email: z.string().email({ message: "Invalid email address" }),
-  phone: z.number().min(10, {
-    message: "Invalid email address",
+  phone: z.number().min(999999999, {
+    message: "Must be atleast 10 numbers",
   }),
   hireDate: z.date().max(new Date(), {
     message: "Hire date cannot be in future",

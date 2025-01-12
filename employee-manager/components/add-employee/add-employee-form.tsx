@@ -4,7 +4,6 @@ import {
   addEmployeeSchema,
   AddEmployeeSchema,
 } from "@/forms-schema/add-employee-schema";
-import { useMemo } from "react";
 import {
   Select,
   SelectContent,
@@ -29,38 +28,59 @@ import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 import { Calendar } from "../ui/calendar";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
-import useFetchAllDepartments from "@/customhooks/departments/useFetchAllDepartments";
 import { ApiDepartmentResponse } from "@/types/department/get-department";
+import useAddNewEmployee from "@/customhooks/employees/useAddNewEmployee";
+import { useState } from "react";
 
 type AddEmployeeFormProps = {
   formId: string;
+  departments: ApiDepartmentResponse[] | undefined;
 };
-export default function AddEmployeeForm({ formId }: AddEmployeeFormProps) {
-  const { data } = useFetchAllDepartments();
-
-  console.log(formId);
-  const addEmployeeFormDefaultValues = useMemo(() => {
-    return {
-      firstName: "",
-      lastName: "",
-      gender: "",
-      dateOfBirth: new Date(),
-      email: "",
-      phone: 1234567890,
-      hireDate: new Date(),
-      departmentId: "",
-    };
-  }, []);
-
+export default function AddEmployeeForm({
+  formId,
+  departments,
+}: AddEmployeeFormProps) {
+  const [formValues, setFormValues] = useState({
+    firstName: "",
+    lastName: "",
+    gender: "",
+    dateOfBirth: new Date(),
+    email: "",
+    phone: "",
+    hireDate: new Date(),
+    departmentId: "",
+  });
+  console.log(formValues);
+  const { mutate, data, isLoading, Error } = useAddNewEmployee();
   const addEmployeeForm = useForm<AddEmployeeSchema>({
     reValidateMode: "onChange",
     resolver: zodResolver(addEmployeeSchema),
-    defaultValues: addEmployeeFormDefaultValues,
+    defaultValues: formValues,
   });
 
   function onSubmit(values: z.infer<typeof addEmployeeSchema>) {
-    console.log(values);
+    setFormValues({
+      ...formValues,
+      firstName: values.firstName,
+      lastName: values.lastName,
+      gender: values.gender,
+      dateOfBirth: values.dateOfBirth,
+      hireDate: values.hireDate,
+      email: values.email,
+      phone: values.phone,
+      departmentId: values.departmentId,
+    });
+    mutate(values, {
+      onSuccess: (data) => {
+        console.log("Employee added successfully:", data);
+      },
+      onError: (error) => {
+        console.error("Error adding employee:", error);
+      },
+    });
   }
+
+  console.log(data);
   return (
     <Form {...addEmployeeForm}>
       <form
@@ -137,10 +157,12 @@ export default function AddEmployeeForm({ formId }: AddEmployeeFormProps) {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent
-                    className={data && data.length > 0 ? "h-64" : ""}
+                    className={
+                      departments && departments.length > 0 ? "h-64" : ""
+                    }
                   >
-                    {data && data.length > 0 ? (
-                      data?.map(
+                    {departments && departments.length > 0 ? (
+                      departments?.map(
                         (department: ApiDepartmentResponse, index: number) => (
                           <SelectItem
                             key={index}
@@ -194,12 +216,8 @@ export default function AddEmployeeForm({ formId }: AddEmployeeFormProps) {
                     className="w-10/12"
                     type="number"
                     min={0}
-                    value={field.value || ""}
-                    onChange={(e) => {
-                      const numericValue = Number(e.target.value);
-                      field.onChange(isNaN(numericValue) ? null : numericValue);
-                    }}
                     placeholder="1234567890"
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage />

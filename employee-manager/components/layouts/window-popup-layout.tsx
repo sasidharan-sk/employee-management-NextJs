@@ -2,8 +2,10 @@
 import { Button } from "../ui/button";
 import { useCallback, useId } from "react";
 import AddEmployeeForm from "../add-employee/add-employee-form";
+import useFetchAllDepartments from "@/customhooks/departments/useFetchAllDepartments";
 
 const WindowPopupLayout = () => {
+  const { data } = useFetchAllDepartments();
   const handleClosePopup = useCallback(() => {
     window.close();
   }, []);
@@ -38,7 +40,7 @@ const WindowPopupLayout = () => {
           </div>
         </div>
         <div className="container mx-auto bg-white shadow-2xl drop-shadow-2xl">
-          <AddEmployeeForm formId={addEmployeeFormId} />
+          <AddEmployeeForm formId={addEmployeeFormId} departments={data} />
         </div>
       </div>
     </>

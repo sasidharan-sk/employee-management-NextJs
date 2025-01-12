@@ -14,7 +14,7 @@ export const addEmployeeSchema = z.object({
     message: "Date of birth cannot be in future",
   }),
   email: z.string().email({ message: "Invalid email address" }),
-  phone: z.number().min(999999999, {
+  phone: z.string().min(10, {
     message: "Must be atleast 10 numbers",
   }),
   hireDate: z.date().max(new Date(), {

@@ -31,6 +31,7 @@ import { format } from "date-fns";
 import { ApiDepartmentResponse } from "@/types/department/get-department";
 import useAddNewEmployee from "@/customhooks/employees/useAddNewEmployee";
 import { useState } from "react";
+import { toast } from "react-toastify";
 
 type AddEmployeeFormProps = {
   formId: string;
@@ -51,7 +52,7 @@ export default function AddEmployeeForm({
     departmentId: "",
   });
   console.log(formValues);
-  const { mutate, data, isLoading, Error } = useAddNewEmployee();
+  const { mutate, data } = useAddNewEmployee();
   const addEmployeeForm = useForm<AddEmployeeSchema>({
     reValidateMode: "onChange",
     resolver: zodResolver(addEmployeeSchema),
@@ -72,9 +73,14 @@ export default function AddEmployeeForm({
     });
     mutate(values, {
       onSuccess: (data) => {
+        toast.success("Employee added successfully");
         console.log("Employee added successfully:", data);
+        setTimeout(() => {
+          window.close();
+        }, 5000);
       },
       onError: (error) => {
+        toast.error(`${error}`);
         console.error("Error adding employee:", error);
       },
     });

@@ -45,7 +45,7 @@ const FilterLayout = () => {
 
   const ToggleWindowPopup = useCallback(() => {
     window.open(
-      "/popup/add-employee",
+      "/popup/employees",
       "_blank",
       "resizable=yes,top=100,left=200,width=1000,height=700"
     );

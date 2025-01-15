@@ -3,6 +3,8 @@ import { Button } from "../ui/button";
 import { useCallback, useId } from "react";
 import AddEmployeeForm from "../add-employee/add-employee-form";
 import useFetchAllDepartments from "@/customhooks/departments/useFetchAllDepartments";
+import { useSearchParams } from "next/navigation";
+import useGetEmployeeById from "@/customhooks/employees/useGetEmployeeById";
 
 const WindowPopupLayout = () => {
   const { data } = useFetchAllDepartments();
@@ -10,8 +12,20 @@ const WindowPopupLayout = () => {
     window.close();
   }, []);
 
+  const searchParams = useSearchParams();
+  const flag = searchParams.get("edit");
+  const id = searchParams.get("id") || "";
   const addEmployeeFormId = useId();
+  const { isLoading, error } = useGetEmployeeById(id);
 
+  if (isLoading)
+    return (
+      <div className="text-lg mx-auto text-blue-500 text-center">
+        Loading...
+      </div>
+    );
+
+  if (error) return "An error has occurred: " + error.message;
   return (
     <>
       <div className="flex flex-col p-6 gap-4">
@@ -25,7 +39,7 @@ const WindowPopupLayout = () => {
                 className="bg-blue-500 text-white hover:bg-blue-600 hover:text-white"
                 variant="outline"
               >
-                Add
+                {flag ? "Save" : "Add"}
               </Button>
             </div>
             <div>

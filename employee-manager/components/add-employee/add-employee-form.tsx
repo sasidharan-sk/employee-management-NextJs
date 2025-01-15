@@ -21,7 +21,6 @@ import {
   FormControl,
   FormMessage,
 } from "../ui/form";
-import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
@@ -30,8 +29,12 @@ import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { ApiDepartmentResponse } from "@/types/department/get-department";
 import useAddNewEmployee from "@/customhooks/employees/useAddNewEmployee";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useSearchParams } from "next/navigation";
+import useGetEmployeeById from "@/customhooks/employees/useGetEmployeeById";
+import useUpdateExistingEmployee from "@/customhooks/employees/useUpdateExistingEmployee";
+import { z } from "zod";
 
 type AddEmployeeFormProps = {
   formId: string;
@@ -51,15 +54,45 @@ export default function AddEmployeeForm({
     hireDate: new Date(),
     departmentId: "",
   });
-  console.log(formValues);
-  const { mutate, data } = useAddNewEmployee();
+  const searchParams = useSearchParams();
+  const editFlag = searchParams.get("edit");
+  const id = searchParams.get("id") || "";
+  const { data: existEmployeeData } = useGetEmployeeById(id);
+
   const addEmployeeForm = useForm<AddEmployeeSchema>({
     reValidateMode: "onChange",
     resolver: zodResolver(addEmployeeSchema),
     defaultValues: formValues,
+    values: formValues,
   });
 
+  const { mutate: mutateAdd } = useAddNewEmployee();
+  const { mutate: mutateEdit } = useUpdateExistingEmployee();
+
+  useEffect(() => {
+    if (existEmployeeData != null && existEmployeeData != undefined) {
+      addEmployeeForm.setValue("firstName", existEmployeeData?.firstName || "");
+      addEmployeeForm.setValue("lastName", existEmployeeData?.lastName || "");
+      addEmployeeForm.setValue("gender", existEmployeeData?.gender || "");
+      addEmployeeForm.setValue(
+        "dateOfBirth",
+        new Date(existEmployeeData?.dateOfBirth) || new Date()
+      );
+      addEmployeeForm.setValue(
+        "hireDate",
+        new Date(existEmployeeData?.hireDate) || new Date()
+      );
+      addEmployeeForm.setValue("email", existEmployeeData?.email || "");
+      addEmployeeForm.setValue("phone", existEmployeeData?.phone || "");
+      addEmployeeForm.setValue(
+        "departmentId",
+        existEmployeeData?.departmentId || ""
+      );
+    }
+  }, [addEmployeeForm, existEmployeeData]);
+
   function onSubmit(values: z.infer<typeof addEmployeeSchema>) {
+    debugger;
     setFormValues({
       ...formValues,
       firstName: values.firstName,
@@ -71,22 +104,37 @@ export default function AddEmployeeForm({
       phone: values.phone,
       departmentId: values.departmentId,
     });
-    mutate(values, {
-      onSuccess: (data) => {
-        toast.success("Employee added successfully");
-        console.log("Employee added successfully:", data);
-        setTimeout(() => {
-          window.close();
-        }, 5000);
-      },
-      onError: (error) => {
-        toast.error(`${error}`);
-        console.error("Error adding employee:", error);
-      },
-    });
-  }
 
-  console.log(data);
+    if (editFlag) {
+      mutateEdit(
+        { id, body: values },
+        {
+          onSuccess: () => {
+            toast.success("Employee updated successfully");
+            setTimeout(() => {
+              window.close();
+            }, 4000);
+            window.location.reload();
+          },
+          onError: (error) => {
+            toast.error(`${error}`);
+          },
+        }
+      );
+    } else {
+      mutateAdd(values, {
+        onSuccess: () => {
+          toast.success("Employee added successfully");
+          setTimeout(() => {
+            window.close();
+          }, 4000);
+        },
+        onError: (error) => {
+          toast.error(`${error}`);
+        },
+      });
+    }
+  }
   return (
     <Form {...addEmployeeForm}>
       <form
@@ -132,16 +180,19 @@ export default function AddEmployeeForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Gender</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={editFlag ? existEmployeeData?.gender : field.value}
+                >
                   <FormControl>
                     <SelectTrigger className="w-10/12">
                       <SelectValue placeholder="Select a gender" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
+                    <SelectItem value="Male">Male</SelectItem>
+                    <SelectItem value="Female">Female</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -156,7 +207,12 @@ export default function AddEmployeeForm({
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Department</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={field.onChange}
+                  value={
+                    editFlag ? existEmployeeData?.departmentId : field.value
+                  }
+                >
                   <FormControl>
                     <SelectTrigger className="w-10/12">
                       <SelectValue placeholder="Select a department" />

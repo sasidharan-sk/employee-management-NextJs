@@ -9,15 +9,26 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { CustomMenuDropDown } from "../common/CustomMenuDropDown";
 import { useState } from "react";
-import { FaEllipsisVertical } from "react-icons/fa6";
 
 export default function TanstackTable() {
   const { data, isPending, error } = useFetchAllEmployees();
-  const [popupVisible, setPopupVisible] = useState<number | null>(null);
+  const menuOptions = ["Edit", "Delete"];
+  const [editFlag, setEditFlag] = useState(false);
 
-  const handlePopupToggle = (rowIndex: number) => {
-    setPopupVisible((prev) => (prev === rowIndex ? null : rowIndex));
+  const handleMenuClick = (option: string, id: string) => {
+    if (option === "Edit") {
+      setEditFlag(true);
+      window.open(
+        `/popup/employees?edit=${editFlag}&id=${id}`,
+        "_blank",
+        "resizable=yes,top=100,left=200,width=1000,height=700"
+      );
+      console.log(`Edit clicked for ID: ${id}`);
+    } else if (option === "Delete") {
+      console.log(`Delete clicked for ID: ${id}`);
+    }
   };
 
   const columnHelper = createColumnHelper<Employee>();
@@ -27,11 +38,6 @@ export default function TanstackTable() {
       header: "#",
       cell: (info) => info.getValue(),
     }),
-    // columnHelper.accessor("empId", {
-    //   header: "Employee ID",
-    //   cell: (info) => info.getValue(),
-    //   enableHiding: true,
-    // }),
     columnHelper.accessor("firstName", {
       header: "First Name",
       cell: (info) => info.getValue(),
@@ -74,35 +80,13 @@ export default function TanstackTable() {
     columnHelper.accessor("actions", {
       header: "",
       cell: ({ row }) => {
-        const rowIndex = row.index;
-        const id = row.original.empId;
+        const id = row.original.empId; // Unique identifier for the row
         return (
           <div className="relative">
-            <FaEllipsisVertical
-              cursor="pointer"
-              size={15}
-              onClick={() => handlePopupToggle(rowIndex)}
+            <CustomMenuDropDown
+              menuOptions={menuOptions}
+              onMenuClick={(option) => handleMenuClick(option, id)}
             />
-            {popupVisible === rowIndex && (
-              <div className="absolute top-6 right-0 bg-white shadow-md rounded-md z-10 w-32">
-                <button
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                  onClick={() =>
-                    alert(`Edit clicked for row ${rowIndex + 1} ID : ${id}`)
-                  }
-                >
-                  Edit
-                </button>
-                <button
-                  className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                  onClick={() =>
-                    alert(`Delete clicked for row ${rowIndex + 1}`)
-                  }
-                >
-                  Delete
-                </button>
-              </div>
-            )}
           </div>
         );
       },

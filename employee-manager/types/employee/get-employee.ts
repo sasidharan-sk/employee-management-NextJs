@@ -9,6 +9,7 @@ export type Employee = {
   hireDate: string;
   departmentName: string;
   departmentId: string;
+  actions?: React.ReactNode;
 };
 
 export type FilterAndSortEmployee = {

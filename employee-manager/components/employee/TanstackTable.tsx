@@ -14,6 +14,7 @@ import { useState } from "react";
 import { CustomAlertDialog } from "../common/CustomAlertDialog";
 import { toast } from "react-toastify";
 import useDeleteEmployee from "@/customhooks/employees/useDeleteEmployee";
+import ImageUpload from "../common/ImageUpload";
 
 export default function TanstackTable() {
   const { data, isPending, error } = useFetchAllEmployees();
@@ -69,6 +70,12 @@ export default function TanstackTable() {
     columnHelper.accessor((_, row) => row + 1, {
       header: "#",
       cell: (info) => info.getValue(),
+    }),
+    columnHelper.accessor("image", {
+      header: "Image",
+      cell: () => {
+        return <ImageUpload />;
+      },
     }),
     columnHelper.accessor("firstName", {
       header: "First Name",

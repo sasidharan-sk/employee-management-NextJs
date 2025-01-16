@@ -10,6 +10,7 @@ export type Employee = {
   departmentName: string;
   departmentId: string;
   actions?: React.ReactNode;
+  image?: string;
 };
 
 export type FilterAndSortEmployee = {

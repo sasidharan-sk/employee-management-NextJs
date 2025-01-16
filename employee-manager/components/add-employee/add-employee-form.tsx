@@ -110,11 +110,12 @@ export default function AddEmployeeForm({
         { id, body: values },
         {
           onSuccess: () => {
-            toast.success("Employee updated successfully");
-            setTimeout(() => {
-              window.close();
-            }, 4000);
-            window.location.reload();
+            toast.success("Employee updated successfully", {
+              onClose: () => {
+                window.opener?.location.reload(true);
+                window.close();
+              },
+            });
           },
           onError: (error) => {
             toast.error(`${error}`);
@@ -124,10 +125,12 @@ export default function AddEmployeeForm({
     } else {
       mutateAdd(values, {
         onSuccess: () => {
-          toast.success("Employee added successfully");
-          setTimeout(() => {
-            window.close();
-          }, 4000);
+          toast.success("Employee added successfully", {
+            onClose: () => {
+              window.opener?.location.reload(true);
+              window.close();
+            },
+          });
         },
         onError: (error) => {
           toast.error(`${error}`);

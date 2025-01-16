@@ -11,13 +11,25 @@ import {
 } from "@tanstack/react-table";
 import { CustomMenuDropDown } from "../common/CustomMenuDropDown";
 import { useState } from "react";
+import { CustomAlertDialog } from "../common/CustomAlertDialog";
+import { toast } from "react-toastify";
+import useDeleteEmployee from "@/customhooks/employees/useDeleteEmployee";
 
 export default function TanstackTable() {
   const { data, isPending, error } = useFetchAllEmployees();
+  const { mutate: mutateDelete } = useDeleteEmployee();
   const menuOptions = ["Edit", "Delete"];
   const [editFlag, setEditFlag] = useState(false);
-
-  const handleMenuClick = (option: string, id: string) => {
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [deleteReq, setDeleteReq] = useState({
+    employeeName: "",
+    empId: "",
+  });
+  const handleMenuClick = (
+    option: string,
+    id: string,
+    employeeName: string
+  ) => {
     if (option === "Edit") {
       setEditFlag(true);
       window.open(
@@ -25,10 +37,30 @@ export default function TanstackTable() {
         "_blank",
         "resizable=yes,top=100,left=200,width=1000,height=700"
       );
-      console.log(`Edit clicked for ID: ${id}`);
     } else if (option === "Delete") {
-      console.log(`Delete clicked for ID: ${id}`);
+      setDeleteReq({
+        ...deleteReq,
+        employeeName: employeeName,
+        empId: id,
+      });
+      setIsAlertOpen(true);
     }
+  };
+
+  const handleConfirmDelete = () => {
+    mutateDelete(deleteReq.empId, {
+      onSuccess: () => {
+        toast.success("Employee deleted successfully");
+      },
+      onError: (error) => {
+        toast.error(`${error}`);
+      },
+    });
+    setIsAlertOpen(false);
+  };
+
+  const handleAlertClose = () => {
+    setIsAlertOpen(false);
   };
 
   const columnHelper = createColumnHelper<Employee>();
@@ -81,11 +113,14 @@ export default function TanstackTable() {
       header: "",
       cell: ({ row }) => {
         const id = row.original.empId; // Unique identifier for the row
+        const firstName = row.original.firstName;
         return (
           <div className="relative">
             <CustomMenuDropDown
               menuOptions={menuOptions}
-              onMenuClick={(option) => handleMenuClick(option, id)}
+              onMenuClick={(option: string) =>
+                handleMenuClick(option, id, firstName)
+              }
             />
           </div>
         );
@@ -184,6 +219,19 @@ export default function TanstackTable() {
           </button>
         </div>
       </div>
+      {/* Alert Dialog */}
+      {isAlertOpen && (
+        <CustomAlertDialog
+          content={
+            <>
+              Are you sure to delete <strong>{deleteReq.employeeName}</strong>?
+            </>
+          }
+          isOpen={isAlertOpen}
+          onConfirm={handleConfirmDelete}
+          onClose={handleAlertClose}
+        />
+      )}
     </div>
   );
 }

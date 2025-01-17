@@ -1,55 +1,119 @@
-import { useState } from "react";
 import Image from "next/image";
-import defaultImg from "@/public/defaultEmployee.svg";
 import { IoIosCamera } from "react-icons/io";
-import { Label } from "../ui/label";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  imageUploadSchema,
+  AddEmployeeImageSchema,
+} from "@/forms-schema/image-upload-schema"; // Zod schema for validation
 import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { toast } from "react-toastify";
+import useEmployeeImageUpload from "@/customhooks/employees/useEmployeeImageUpload";
+import { ImageUploadRequest } from "@/types/employee/upload-image-request";
+import maleImg from "@/public/MaleEmployee.svg";
+import femaleImg from "@/public/femaleEmployee.svg";
 
-export default function ImageUpload() {
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [fileName, setFileName] = useState<string>(""); // State for filename
+export default function ImageUpload({
+  empId,
+  url,
+  gender,
+}: {
+  empId: string;
+  url: string;
+  gender: string;
+}) {
+  const profileImg =
+    url != "" ? encodeURI(url) : gender == "Male" ? maleImg : femaleImg;
+  const { mutate } = useEmployeeImageUpload();
+  const {
+    setValue,
+    handleSubmit,
+    trigger,
+    formState: { errors },
+    reset,
+  } = useForm<AddEmployeeImageSchema>({
+    resolver: zodResolver(imageUploadSchema),
+  });
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => {
-        setSelectedImage(reader.result as string); // Set the image preview URL
-        setFileName(file.name);
+      reader.onload = async () => {
+        setValue("File", file);
+        setValue("FileName", file.name);
+        setValue("EmpId", empId);
+        const isValid = await trigger(["File", "FileName", "EmpId"]);
+        if (isValid) {
+          handleSubmit(onSubmit)();
+        }
       };
-      reader.readAsDataURL(file); // Read file as data URL for preview
+      reader.readAsDataURL(file);
     }
   };
 
+  const onSubmit = (data: AddEmployeeImageSchema) => {
+    console.log("data :", data);
+    const imageUploadRequest: ImageUploadRequest = {
+      EmpId: data.EmpId,
+      File: data.File,
+      FileName: data.FileName,
+      FileDescription: data.FileDescription || "",
+    };
+    mutate(imageUploadRequest, {
+      onSuccess: () => {
+        toast.success("Image uploaded successfully");
+      },
+      onError: (error) => {
+        toast.error(`${error}`);
+      },
+    });
+    reset();
+  };
+
   return (
-    <div className="flex flex-col items-center">
+    <form className="flex flex-col items-center">
       {/* Image Upload Section */}
-      <div className="relative p-2 bg-[#fdfdfd] w-14  h-14 rounded-full border">
+      <div className="relative p-[1px] bg-[#fdfdfd] w-14 h-14 rounded-full border-2 border-gray-400">
         {/* Image Display */}
+
         <Image
-          className="dark:invert rounded-full"
-          src={selectedImage || defaultImg} // Display selected image or default
+          id={empId}
+          className="dark:invert rounded-full object-cover h-[100%] w-[100%]"
+          src={profileImg}
           alt="Employee Manager Logo"
-          width={40}
-          height={40}
+          width={100}
+          height={100}
           priority
         />
 
+        {/* Camera Icon to Trigger File Upload */}
         <Label
-          htmlFor="file-upload"
-          className="absolute -top-1 left-9 bg-blue-500 text-white w-6 h-6 rounded-full flex items-center justify-center cursor-pointer border-2 border-white shadow-lg"
+          htmlFor={`file-upload-${empId}`}
+          className="absolute -top-1 left-9 bg-blue-500 text-white w-5 h-5 rounded-full flex items-center justify-center cursor-pointer border-2 border-white shadow-lg"
         >
-          <IoIosCamera size={16} />
+          <IoIosCamera size={14} />
         </Label>
         <Input
-          id="file-upload"
+          id={`file-upload-${empId}`}
           accept="image/*"
-          onChange={handleFileChange}
           type="file"
-          hidden
+          onChange={(e) => {
+            console.log("from menu dropdown", empId);
+            handleFileChange(e);
+          }}
           className="hidden"
+          hidden
         />
       </div>
-    </div>
+
+      {/* Error Message for File Upload */}
+      {errors.File?.message && (
+        <p className="text-red-500 w-auto text-wrap text-center">
+          {errors.File.message}
+        </p>
+      )}
+    </form>
   );
 }

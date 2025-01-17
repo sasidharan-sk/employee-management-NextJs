@@ -34,7 +34,9 @@ export function CustomMenuDropDown({
               key={option}
               value={option}
               className="text-sm"
-              onClick={() => onMenuClick(option)}
+              onClick={() => {
+                onMenuClick(option);
+              }}
             >
               {option}
             </DropdownMenuRadioItem>

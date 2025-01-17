@@ -92,7 +92,6 @@ export default function AddEmployeeForm({
   }, [addEmployeeForm, existEmployeeData]);
 
   function onSubmit(values: z.infer<typeof addEmployeeSchema>) {
-    debugger;
     setFormValues({
       ...formValues,
       firstName: values.firstName,

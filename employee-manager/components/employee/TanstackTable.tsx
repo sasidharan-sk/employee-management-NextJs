@@ -26,6 +26,7 @@ export default function TanstackTable() {
     employeeName: "",
     empId: "",
   });
+
   const handleMenuClick = (
     option: string,
     id: string,
@@ -71,10 +72,20 @@ export default function TanstackTable() {
       header: "#",
       cell: (info) => info.getValue(),
     }),
-    columnHelper.accessor("image", {
-      header: "Image",
-      cell: () => {
-        return <ImageUpload />;
+    columnHelper.accessor("profileImgUrl", {
+      header: "profile Image",
+      cell: (info) => {
+        const id = info.row.original.empId || "";
+        const url = info.row.original.profileImgUrl || "";
+        const gender = info.row.original.gender;
+        return (
+          <ImageUpload
+            key={`${info.row.id}-${id}`}
+            empId={id}
+            url={url}
+            gender={gender}
+          />
+        );
       },
     }),
     columnHelper.accessor("firstName", {

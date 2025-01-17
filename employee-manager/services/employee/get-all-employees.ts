@@ -12,7 +12,6 @@ export async function GetAllEmployees(
   pageSize?: number
 ): Promise<EmployeeApiResponse> {
   const params = new URLSearchParams();
-
   if (filterOn) params.append("filterOn", filterOn);
   if (filterQuery) params.append("filterQuery", filterQuery);
   if (sortOn) params.append("sortOn", sortOn);

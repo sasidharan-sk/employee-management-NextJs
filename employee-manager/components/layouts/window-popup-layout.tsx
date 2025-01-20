@@ -30,7 +30,7 @@ const WindowPopupLayout = () => {
     <>
       <div className="flex flex-col p-6 gap-4">
         <div className="container mx-auto">
-          <div className="flex flex-auto items-center justify-end gap-4">
+          <div className="flex flex-auto  items-center justify-end gap-4">
             <div>
               <Button
                 id="add-employee-button"

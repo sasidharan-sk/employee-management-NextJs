@@ -21,7 +21,7 @@ export async function GetAllEmployees(
   if (pageSize !== undefined) params.append("pageSize", pageSize.toString());
 
   const response = await axiosInstance.get(
-    `${ENDPOINTS.GET_EMPLOYEES}?${params.toString()}`
+    `${ENDPOINTS.GET_EMPLOYEES_V2}?${params.toString()}`
   );
   return response?.data;
 }

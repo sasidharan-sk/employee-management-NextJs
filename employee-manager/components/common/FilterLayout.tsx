@@ -47,7 +47,7 @@ const FilterLayout = () => {
     window.open(
       "/popup/employees",
       "_blank",
-      "resizable=yes,top=100,left=200,width=1000,height=700"
+      "resizable=yes,top=200,left=150,width=1000,height=560"
     );
   }, []);
 

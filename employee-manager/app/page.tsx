@@ -1,9 +1,11 @@
+import Header from "@/components/header/Header";
 import Image from "next/image";
 
 export default function Home() {
   return (
-    <>
-      <div className="grid grid-rows-[auto_1fr_auto] items-center justify-items-center min-h-screen p-8 gap-12 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="flex flex-col min-h-screen">
+      <Header />
+      <div className="flex-grow grid grid-rows-[auto_1fr_auto] items-center justify-items-center p-8 gap-20 sm:p-20 font-[family-name:var(--font-geist-sans)]">
         {/* Main Content */}
         <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
           <header className="text-center sm:text-left">
@@ -28,12 +30,12 @@ export default function Home() {
             Manager.
           </p>
         </main>
-
-        {/* Footer Placeholder */}
-        <footer className="row-start-3 text-sm text-gray-500">
-          © {new Date().getFullYear()} Employee Manager. All rights reserved.
-        </footer>
       </div>
-    </>
+
+      {/* Footer */}
+      <footer className="text-center text-sm text-gray-500 py-4">
+        © {new Date().getFullYear()} Employee Manager. All rights reserved.
+      </footer>
+    </div>
   );
 }

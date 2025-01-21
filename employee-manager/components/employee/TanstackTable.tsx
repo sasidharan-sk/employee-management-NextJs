@@ -2,7 +2,7 @@
 import { useFetchAllEmployees } from "@/customhooks/employees/useFetchAllEmployees";
 import { Employee } from "@/types/employee/get-employee";
 import {
-  createColumnHelper,
+  ColumnDef,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -10,11 +10,12 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { CustomMenuDropDown } from "../common/CustomMenuDropDown";
-import { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { CustomAlertDialog } from "../common/CustomAlertDialog";
 import { toast } from "react-toastify";
 import useDeleteEmployee from "@/customhooks/employees/useDeleteEmployee";
 import ImageUpload from "../common/ImageUpload";
+import { FaArrowUpAZ, FaArrowUpZA } from "react-icons/fa6";
 
 type TanstackTableProps = {
   searchQuery: string;
@@ -25,9 +26,15 @@ export default function TanstackTable({
   searchQuery,
   filterColumn,
 }: TanstackTableProps) {
+  const [sorting, setSorting] = useState({
+    sortOn: "firstName",
+    sortBy: "asc",
+  });
   const { data, isPending, error } = useFetchAllEmployees({
     filterOn: filterColumn,
     filterQuery: searchQuery,
+    sortOn: sorting.sortOn,
+    sortBy: sorting.sortBy,
   });
   const { mutate: mutateDelete } = useDeleteEmployee();
   const menuOptions = ["Edit", "Delete"];
@@ -76,83 +83,248 @@ export default function TanstackTable({
     setIsAlertOpen(false);
   };
 
-  const columnHelper = createColumnHelper<Employee>();
+  const handleSorting = (sortKey: string) => {
+    setSorting((prev) => ({
+      sortOn: sortKey,
+      sortBy: prev.sortOn === sortKey && prev.sortBy === "asc" ? "desc" : "asc",
+    }));
+  };
 
-  const columns = [
-    columnHelper.accessor((_, row) => row + 1, {
-      header: "#",
-      cell: (info) => info.getValue(),
-    }),
-    columnHelper.accessor("profileImgUrl", {
-      header: "profile Image",
-      cell: (info) => {
-        const id = info.row.original.empId || "";
-        const url = info.row.original.profileImgUrl || "";
-        const gender = info.row.original.gender;
-        return (
-          <ImageUpload
-            key={`${info.row.id}-${id}`}
-            empId={id}
-            url={url}
-            gender={gender}
-          />
-        );
+  const columns = useMemo<ColumnDef<Employee>[]>(
+    () => [
+      {
+        accessorFn: (_, row) => row + 1,
+        id: "#",
+        header: () => <span>#</span>,
+        cell: (info) => info.getValue(),
       },
-    }),
-    columnHelper.accessor("firstName", {
-      header: "First Name",
-      cell: (info) => info.getValue(),
-    }),
-    columnHelper.accessor("lastName", {
-      header: "Last Name",
-      cell: (info) => info.getValue(),
-    }),
-    columnHelper.accessor("gender", {
-      header: "Gender",
-      cell: (info) => info.getValue(),
-    }),
-    columnHelper.accessor("dateOfBirth", {
-      header: "Date of Birth",
-      cell: (info) => new Date(info.getValue()).toLocaleDateString(),
-    }),
-    columnHelper.accessor("email", {
-      header: "Email",
-      cell: (info) => (
-        <a href={`mailto:${info.getValue()}`} className="text-blue-500">
-          {info.getValue()}
-        </a>
-      ),
-    }),
-    columnHelper.accessor("phone", {
-      header: "Phone",
-      cell: (info) => info.renderValue(),
-    }),
-    columnHelper.accessor("hireDate", {
-      header: "Hire Date",
-      cell: (info) => new Date(info.getValue()).toLocaleDateString(),
-    }),
-    columnHelper.accessor("departmentName", {
-      header: "Department",
-      cell: (info) => info.getValue(),
-    }),
-    columnHelper.accessor("actions", {
-      header: "",
-      cell: ({ row }) => {
-        const id = row.original.empId; // Unique identifier for the row
-        const firstName = row.original.firstName;
-        return (
-          <div className="relative">
-            <CustomMenuDropDown
-              menuOptions={menuOptions}
-              onMenuClick={(option: string) =>
-                handleMenuClick(option, id, firstName)
-              }
+      {
+        accessorKey: "profileImgUrl",
+        header: () => <span>Profile Image</span>,
+        cell: (info) => {
+          const id = info.row.original.empId || "";
+          const url = info.row.original.profileImgUrl || "";
+          const gender = info.row.original.gender;
+          return (
+            <ImageUpload
+              key={`${info.row.id}-${id}`}
+              empId={id}
+              url={url}
+              gender={gender}
             />
-          </div>
-        );
+          );
+        },
       },
-    }),
-  ];
+      {
+        accessorKey: "firstName",
+        header: ({ column }) => (
+          <span className="flex items-center">
+            First Name
+            <span
+              onClick={() => handleSorting(column.id)}
+              className="ml-1 cursor-pointer"
+            >
+              {sorting.sortOn === column.id ? (
+                sorting.sortBy === "asc" ? (
+                  <FaArrowUpAZ size={18} />
+                ) : (
+                  <FaArrowUpZA size={18} />
+                )
+              ) : (
+                <FaArrowUpAZ size={18} className="opacity-70" />
+              )}
+            </span>
+          </span>
+        ),
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "lastName",
+        header: ({ column }) => (
+          <span className="flex items-center">
+            Last Name
+            <span
+              onClick={() => handleSorting(column.id)}
+              className="ml-1 cursor-pointer"
+            >
+              {sorting.sortOn === column.id ? (
+                sorting.sortBy === "asc" ? (
+                  <FaArrowUpAZ size={18} />
+                ) : (
+                  <FaArrowUpZA size={18} />
+                )
+              ) : (
+                <FaArrowUpAZ size={18} className="opacity-70" />
+              )}
+            </span>
+          </span>
+        ),
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "gender",
+        header: ({ column }) => (
+          <span className="flex items-center">
+            Gender
+            <span
+              onClick={() => handleSorting(column.id)}
+              className="ml-1 cursor-pointer"
+            >
+              {sorting.sortOn === column.id ? (
+                sorting.sortBy === "asc" ? (
+                  <FaArrowUpAZ size={18} />
+                ) : (
+                  <FaArrowUpZA size={18} />
+                )
+              ) : (
+                <FaArrowUpAZ size={18} className="opacity-70" />
+              )}
+            </span>
+          </span>
+        ),
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "dateOfBirth",
+        header: ({ column }) => (
+          <span className="flex items-center">
+            Date of Birth
+            <span
+              onClick={() => handleSorting(column.id)}
+              className="ml-1 cursor-pointer"
+            >
+              {sorting.sortOn === column.id ? (
+                sorting.sortBy === "asc" ? (
+                  <FaArrowUpAZ size={18} />
+                ) : (
+                  <FaArrowUpZA size={18} />
+                )
+              ) : (
+                <FaArrowUpAZ size={18} className="opacity-70" />
+              )}
+            </span>
+          </span>
+        ),
+        cell: (info) =>
+          new Date(info.getValue() as string).toLocaleDateString(),
+      },
+      {
+        accessorKey: "email",
+        header: ({ column }) => (
+          <span className="flex items-center">
+            Email
+            <span
+              onClick={() => handleSorting(column.id)}
+              className="ml-1 cursor-pointer"
+            >
+              {sorting.sortOn === column.id ? (
+                sorting.sortBy === "asc" ? (
+                  <FaArrowUpAZ size={18} />
+                ) : (
+                  <FaArrowUpZA size={18} />
+                )
+              ) : (
+                <FaArrowUpAZ size={18} className="opacity-70" />
+              )}
+            </span>
+          </span>
+        ),
+        cell: (info) => (
+          <a href={`mailto:${info.getValue()}`} className="text-blue-500">
+            {info.getValue() as string}
+          </a>
+        ),
+      },
+      {
+        accessorKey: "phone",
+        header: ({ column }) => (
+          <span className="flex items-center">
+            Phone
+            <span
+              onClick={() => handleSorting(column.id)}
+              className="ml-1 cursor-pointer"
+            >
+              {sorting.sortOn === column.id ? (
+                sorting.sortBy === "asc" ? (
+                  <FaArrowUpAZ size={18} />
+                ) : (
+                  <FaArrowUpZA size={18} />
+                )
+              ) : (
+                <FaArrowUpAZ size={18} className="opacity-70" />
+              )}
+            </span>
+          </span>
+        ),
+        cell: (info) => info.renderValue(),
+      },
+      {
+        accessorKey: "hireDate",
+        header: ({ column }) => (
+          <span className="flex items-center">
+            Hire Date
+            <span
+              onClick={() => handleSorting(column.id)}
+              className="ml-1 cursor-pointer"
+            >
+              {sorting.sortOn === column.id ? (
+                sorting.sortBy === "asc" ? (
+                  <FaArrowUpAZ size={18} />
+                ) : (
+                  <FaArrowUpZA size={18} />
+                )
+              ) : (
+                <FaArrowUpAZ size={18} className="opacity-70" />
+              )}
+            </span>
+          </span>
+        ),
+        cell: (info) =>
+          new Date(info.getValue() as string).toLocaleDateString(),
+      },
+      {
+        accessorKey: "departmentName",
+        header: ({ column }) => (
+          <span className="flex items-center">
+            Department
+            <span
+              onClick={() => handleSorting(column.id)}
+              className="ml-1 cursor-pointer"
+            >
+              {sorting.sortOn === column.id ? (
+                sorting.sortBy === "asc" ? (
+                  <FaArrowUpAZ size={18} />
+                ) : (
+                  <FaArrowUpZA size={18} />
+                )
+              ) : (
+                <FaArrowUpAZ size={18} className="opacity-70" />
+              )}
+            </span>
+          </span>
+        ),
+        cell: (info) => info.getValue(),
+      },
+      {
+        accessorKey: "actions",
+        header: "",
+        cell: ({ row }) => {
+          const { empId, firstName } = row.original;
+          return (
+            <div className="relative">
+              <CustomMenuDropDown
+                menuOptions={menuOptions}
+                onMenuClick={(option: string) =>
+                  handleMenuClick(option, empId, firstName)
+                }
+              />
+            </div>
+          );
+        },
+      },
+    ],
+    [sorting]
+  );
 
   const table = useReactTable<Employee>({
     data: data?.employees || [],
@@ -160,6 +332,7 @@ export default function TanstackTable({
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    manualSorting: true, //use pre-sorted row model instead of sorted row model
   });
 
   if (isPending)

@@ -20,7 +20,7 @@ const WindowPopupLayout = () => {
 
   if (isLoading)
     return (
-      <div className="text-lg mx-auto text-blue-500 text-center">
+      <div className="text-lg mx-auto text-blue-500 text-center p-6">
         Loading...
       </div>
     );

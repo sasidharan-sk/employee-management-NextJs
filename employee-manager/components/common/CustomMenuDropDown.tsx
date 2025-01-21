@@ -27,7 +27,7 @@ export function CustomMenuDropDown({
           <FaEllipsisVertical cursor={"pointer"} />
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-30">
+      <DropdownMenuContent className="absolute w-30  right-0">
         <DropdownMenuGroup>
           {menuOptions.map((option) => (
             <DropdownMenuRadioItem

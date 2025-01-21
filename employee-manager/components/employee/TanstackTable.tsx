@@ -15,7 +15,8 @@ import { CustomAlertDialog } from "../common/CustomAlertDialog";
 import { toast } from "react-toastify";
 import useDeleteEmployee from "@/customhooks/employees/useDeleteEmployee";
 import ImageUpload from "../common/ImageUpload";
-import { FaArrowUpAZ, FaArrowUpZA } from "react-icons/fa6";
+import { ArrowDown, ArrowUp } from "lucide-react";
+import { DataTablePagination } from "../common/DataTablePagination";
 
 type TanstackTableProps = {
   searchQuery: string;
@@ -30,12 +31,19 @@ export default function TanstackTable({
     sortOn: "firstName",
     sortBy: "asc",
   });
+  const [pagination, setPagination] = useState({
+    pageNumber: 1,
+    pageSize: 10,
+  });
   const { data, isPending, error } = useFetchAllEmployees({
     filterOn: filterColumn,
     filterQuery: searchQuery,
     sortOn: sorting.sortOn,
     sortBy: sorting.sortBy,
+    pageNumber: pagination.pageNumber,
+    pageSize: pagination.pageSize,
   });
+  const totalCount = data?.totalCount;
   const { mutate: mutateDelete } = useDeleteEmployee();
   const menuOptions = ["Edit", "Delete"];
   const [editFlag, setEditFlag] = useState(false);
@@ -90,6 +98,13 @@ export default function TanstackTable({
     }));
   };
 
+  const handlePagination = (pageNumber: number, pageSize: number) => {
+    setPagination({
+      ...pagination,
+      pageNumber: pageNumber,
+      pageSize: pageSize,
+    });
+  };
   const columns = useMemo<ColumnDef<Employee>[]>(
     () => [
       {
@@ -126,12 +141,12 @@ export default function TanstackTable({
             >
               {sorting.sortOn === column.id ? (
                 sorting.sortBy === "asc" ? (
-                  <FaArrowUpAZ size={18} />
+                  <ArrowUp size={20} strokeWidth={3} />
                 ) : (
-                  <FaArrowUpZA size={18} />
+                  <ArrowDown size={20} strokeWidth={3} />
                 )
               ) : (
-                <FaArrowUpAZ size={18} className="opacity-70" />
+                <ArrowUp size={20} strokeWidth={1.5} />
               )}
             </span>
           </span>
@@ -149,12 +164,12 @@ export default function TanstackTable({
             >
               {sorting.sortOn === column.id ? (
                 sorting.sortBy === "asc" ? (
-                  <FaArrowUpAZ size={18} />
+                  <ArrowUp size={20} strokeWidth={3} />
                 ) : (
-                  <FaArrowUpZA size={18} />
+                  <ArrowDown size={20} strokeWidth={3} />
                 )
               ) : (
-                <FaArrowUpAZ size={18} className="opacity-70" />
+                <ArrowUp size={20} strokeWidth={1.5} />
               )}
             </span>
           </span>
@@ -172,12 +187,12 @@ export default function TanstackTable({
             >
               {sorting.sortOn === column.id ? (
                 sorting.sortBy === "asc" ? (
-                  <FaArrowUpAZ size={18} />
+                  <ArrowUp size={20} strokeWidth={3} />
                 ) : (
-                  <FaArrowUpZA size={18} />
+                  <ArrowDown size={20} strokeWidth={3} />
                 )
               ) : (
-                <FaArrowUpAZ size={18} className="opacity-70" />
+                <ArrowUp size={20} strokeWidth={1.5} />
               )}
             </span>
           </span>
@@ -195,12 +210,12 @@ export default function TanstackTable({
             >
               {sorting.sortOn === column.id ? (
                 sorting.sortBy === "asc" ? (
-                  <FaArrowUpAZ size={18} />
+                  <ArrowUp size={20} strokeWidth={3} />
                 ) : (
-                  <FaArrowUpZA size={18} />
+                  <ArrowDown size={20} strokeWidth={3} />
                 )
               ) : (
-                <FaArrowUpAZ size={18} className="opacity-70" />
+                <ArrowUp size={20} strokeWidth={1.5} />
               )}
             </span>
           </span>
@@ -219,12 +234,12 @@ export default function TanstackTable({
             >
               {sorting.sortOn === column.id ? (
                 sorting.sortBy === "asc" ? (
-                  <FaArrowUpAZ size={18} />
+                  <ArrowUp size={20} strokeWidth={3} />
                 ) : (
-                  <FaArrowUpZA size={18} />
+                  <ArrowDown size={20} strokeWidth={3} />
                 )
               ) : (
-                <FaArrowUpAZ size={18} className="opacity-70" />
+                <ArrowUp size={20} strokeWidth={1.5} />
               )}
             </span>
           </span>
@@ -246,12 +261,12 @@ export default function TanstackTable({
             >
               {sorting.sortOn === column.id ? (
                 sorting.sortBy === "asc" ? (
-                  <FaArrowUpAZ size={18} />
+                  <ArrowUp size={20} strokeWidth={3} />
                 ) : (
-                  <FaArrowUpZA size={18} />
+                  <ArrowDown size={20} strokeWidth={3} />
                 )
               ) : (
-                <FaArrowUpAZ size={18} className="opacity-70" />
+                <ArrowUp size={20} strokeWidth={1.5} />
               )}
             </span>
           </span>
@@ -269,12 +284,12 @@ export default function TanstackTable({
             >
               {sorting.sortOn === column.id ? (
                 sorting.sortBy === "asc" ? (
-                  <FaArrowUpAZ size={18} />
+                  <ArrowUp size={20} strokeWidth={3} />
                 ) : (
-                  <FaArrowUpZA size={18} />
+                  <ArrowDown size={20} strokeWidth={3} />
                 )
               ) : (
-                <FaArrowUpAZ size={18} className="opacity-70" />
+                <ArrowUp size={20} strokeWidth={1.5} />
               )}
             </span>
           </span>
@@ -293,12 +308,12 @@ export default function TanstackTable({
             >
               {sorting.sortOn === column.id ? (
                 sorting.sortBy === "asc" ? (
-                  <FaArrowUpAZ size={18} />
+                  <ArrowUp size={20} strokeWidth={3} />
                 ) : (
-                  <FaArrowUpZA size={18} />
+                  <ArrowDown size={20} strokeWidth={3} />
                 )
               ) : (
-                <FaArrowUpAZ size={18} className="opacity-70" />
+                <ArrowUp size={20} strokeWidth={1.5} />
               )}
             </span>
           </span>
@@ -323,7 +338,7 @@ export default function TanstackTable({
         },
       },
     ],
-    [sorting]
+    [handleMenuClick, sorting.sortBy, sorting.sortOn]
   );
 
   const table = useReactTable<Employee>({
@@ -332,7 +347,14 @@ export default function TanstackTable({
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    manualSorting: true, //use pre-sorted row model instead of sorted row model
+    manualSorting: true,
+    manualPagination: true,
+    state: {
+      pagination: {
+        pageIndex: pagination.pageNumber - 1, // Adjust for 0-indexed pages
+        pageSize: pagination.pageSize,
+      },
+    },
   });
 
   if (isPending)
@@ -415,26 +437,14 @@ export default function TanstackTable({
           </tbody>
         </table>
 
-        {/* Pagination Controls */}
-        <div className="flex justify-between items-center px-6 py-3 bg-gray-100">
-          <button
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-            className="px-4 py-2 bg-indigo-600 text-white rounded disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span className="text-gray-700">
-            Page {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
-          </span>
-          <button
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-            className="px-4 py-2 bg-indigo-600 text-white rounded disabled:opacity-50"
-          >
-            Next
-          </button>
+        <div className="flex flex-col gap-2.5">
+          <DataTablePagination
+            table={table}
+            onPageChange={(pageNumber, pageSize) =>
+              handlePagination(pageNumber, pageSize)
+            }
+            totalCount={totalCount}
+          />
         </div>
       </div>
       {/* Alert Dialog */}

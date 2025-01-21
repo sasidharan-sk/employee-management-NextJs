@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ENDPOINTS } from "@/config/apiconfig";
 import { EmployeeApiResponse } from "@/types/employee/apiresponse";
+import { FilterAndSortEmployee } from "@/types/employee/get-employee";
 import axiosInstance from "@/utils/axiosInstance";
 
-export async function GetAllEmployees(
-  filterOn?: string,
-  filterQuery?: string,
-  sortOn?: string,
-  sortBy?: string,
-  pageNumber?: number,
-  pageSize?: number
-): Promise<EmployeeApiResponse> {
+export async function GetAllEmployees({
+  filterOn,
+  filterQuery,
+  sortOn,
+  sortBy,
+  pageNumber,
+  pageSize,
+}: FilterAndSortEmployee): Promise<EmployeeApiResponse> {
   const params = new URLSearchParams();
   if (filterOn) params.append("filterOn", filterOn);
   if (filterQuery) params.append("filterQuery", filterQuery);

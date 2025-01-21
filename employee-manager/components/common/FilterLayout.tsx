@@ -1,13 +1,5 @@
 "use client";
-import {
-  Calculator,
-  Calendar,
-  CreditCard,
-  Settings,
-  Smile,
-  User,
-} from "lucide-react";
-
+import { User } from "lucide-react";
 import {
   Command,
   CommandEmpty,
@@ -16,7 +8,6 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-  CommandShortcut,
 } from "../ui/command";
 import {
   Select,
@@ -26,18 +17,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-
 import { Button } from "../ui/button";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useDebounce } from "@/customhooks/common/useDebounce";
+import { Employee } from "@/types/employee/get-employee";
+import useOnClickOutside from "@/customhooks/common/useOnClickOutside";
 
-import { useCallback, useRef, useState } from "react";
-import { useSearchParams } from "next/navigation";
+type SearchBarProps = {
+  onSearch: (query: string, column: string) => void;
+  employees: Employee[]; // Add the employee data type
+};
 
-const FilterLayout = () => {
+const FilterLayout = ({ onSearch, employees }: SearchBarProps) => {
   const [searchVal, setSearchVal] = useState("");
   const [selectedColumn, setSelectedColumn] = useState("");
-  const OnSearchValue = useCallback((e: string) => {
-    setSearchVal(e);
-  }, []);
+  const [isCommandOpen, setIsCommanOpen] = useState(false);
+  const commandRef = useRef<HTMLDivElement>(null);
+  // Debounced search value
+  const debouncedSearchVal = useDebounce(searchVal, 500);
+  useOnClickOutside(commandRef, () => setIsCommanOpen(false));
+
+  // Trigger search when debounced value changes
+  useEffect(() => {
+    onSearch(debouncedSearchVal, selectedColumn);
+  }, [debouncedSearchVal, selectedColumn, onSearch]);
 
   const SelectedColumnValue = useCallback((value: string) => {
     setSelectedColumn(value);
@@ -51,58 +54,71 @@ const FilterLayout = () => {
     );
   }, []);
 
+  const handleCommandItemClick = (value: string, column: string) => {
+    setSelectedColumn(column);
+    setSearchVal(value);
+    onSearch(value, column); // Trigger search after setting filter
+    setIsCommanOpen(false); // hide the command List suggestions
+  };
+
   return (
     <div className="flex flex-wrap items-center justify-between gap-5 md:justify-between">
       <div className="flex items-center justify-start gap-6">
         {/* Search Bar Container */}
-        <div>
+        <div ref={commandRef}>
           <Command className="rounded-lg border shadow-sm md:min-w-[30vw]">
             <CommandInput
-              onValueChange={(e) => OnSearchValue(e)}
-              placeholder="Type a command or search..."
+              onFocus={() => setIsCommanOpen(true)}
+              value={searchVal}
+              onValueChange={(newValue) => setSearchVal(newValue)}
+              placeholder="Search..."
             />
-            {/* <CommandList>
-            <CommandEmpty>No results found.</CommandEmpty>
-            <CommandGroup heading="Suggestions">
-              <CommandItem>
-                <Calendar />
-                <span>Calendar</span>
-              </CommandItem>
-              <CommandItem>
-                <Smile />
-                <span>Search Emoji</span>
-              </CommandItem>
-              <CommandItem disabled>
-                <Calculator />
-                <span>Calculator</span>
-              </CommandItem>
-            </CommandGroup>
-            <CommandSeparator />
-            <CommandGroup heading="Settings">
-              <CommandItem>
-                <User />
-                <span>Profile</span>
-                <CommandShortcut>⌘P</CommandShortcut>
-              </CommandItem>
-              <CommandItem>
-                <CreditCard />
-                <span>Billing</span>
-                <CommandShortcut>⌘B</CommandShortcut>
-              </CommandItem>
-              <CommandItem>
-                <Settings />
-                <span>Settings</span>
-                <CommandShortcut>⌘S</CommandShortcut>
-              </CommandItem>
-            </CommandGroup>
-          </CommandList> */}
+            {isCommandOpen && (
+              <CommandList>
+                {employees.length === 0 && (
+                  <CommandEmpty className="shadow-2xl drop-shadow-xl md:min-w-[30vw]  absolute bg-white  z-50 max-h-20 text-center p-6">
+                    No results found.
+                  </CommandEmpty>
+                )}
+                {employees.length > 0 && (
+                  <CommandGroup className="flex items-start  w-[30vw] justify-start absolute bg-white  z-50 max-h-40 overflow-auto scrollbar-thin  scrollbar-thumb-blue-500 scrollbar-track-gray-300 shadow-2xl drop-shadow-xl">
+                    {/* Dynamically populate employee data */}
+                    {employees.map((employee) => (
+                      <CommandItem
+                        key={employee.empId}
+                        onSelect={() =>
+                          handleCommandItemClick(
+                            employee.firstName,
+                            "firstName"
+                          )
+                        }
+                      >
+                        <User />
+                        <span className="font-bold break-words">
+                          {employee.firstName}
+                        </span>
+                        <span className="break-words">
+                          ({employee.departmentName})
+                        </span>
+
+                        <CommandSeparator />
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
+              </CommandList>
+            )}
           </Command>
         </div>
+
         {/* Dropdown for filtering */}
         <div>
-          <Select onValueChange={(val) => SelectedColumnValue(val)}>
+          <Select
+            value={selectedColumn}
+            onValueChange={(val) => SelectedColumnValue(val)}
+          >
             <SelectTrigger className="md:w-[200px] shadow-sm h-11">
-              <SelectValue placeholder="Select a column" />
+              <SelectValue placeholder="Select a value" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -110,6 +126,8 @@ const FilterLayout = () => {
                 <SelectItem value="lastName">Last Name</SelectItem>
                 <SelectItem value="gender">Gender</SelectItem>
                 <SelectItem value="email">Email</SelectItem>
+                <SelectItem value="phone">Phone</SelectItem>
+                <SelectItem value="departmentName">Department</SelectItem>
               </SelectGroup>
             </SelectContent>
           </Select>

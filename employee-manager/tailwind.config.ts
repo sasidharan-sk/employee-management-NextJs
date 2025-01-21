@@ -52,6 +52,9 @@ export default {
           "5": "hsl(var(--chart-5))",
         },
       },
+      spacing: {
+        "scrollbar-width": "12px", // Custom value for scrollbar width
+      },
       width: {
         "95%": "95%",
         "98%": "98%",
@@ -66,5 +69,8 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("tailwind-scrollbar"), // Correct placement of the scrollbar plugin
+  ],
 } satisfies Config;

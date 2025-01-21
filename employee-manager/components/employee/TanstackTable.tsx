@@ -16,8 +16,19 @@ import { toast } from "react-toastify";
 import useDeleteEmployee from "@/customhooks/employees/useDeleteEmployee";
 import ImageUpload from "../common/ImageUpload";
 
-export default function TanstackTable() {
-  const { data, isPending, error } = useFetchAllEmployees();
+type TanstackTableProps = {
+  searchQuery: string;
+  filterColumn: string;
+};
+
+export default function TanstackTable({
+  searchQuery,
+  filterColumn,
+}: TanstackTableProps) {
+  const { data, isPending, error } = useFetchAllEmployees({
+    filterOn: filterColumn,
+    filterQuery: searchQuery,
+  });
   const { mutate: mutateDelete } = useDeleteEmployee();
   const menuOptions = ["Edit", "Delete"];
   const [editFlag, setEditFlag] = useState(false);
@@ -107,10 +118,7 @@ export default function TanstackTable() {
     columnHelper.accessor("email", {
       header: "Email",
       cell: (info) => (
-        <a
-          href={`mailto:${info.getValue()}`}
-          className="text-blue-500 underline"
-        >
+        <a href={`mailto:${info.getValue()}`} className="text-blue-500">
           {info.getValue()}
         </a>
       ),
@@ -156,16 +164,21 @@ export default function TanstackTable() {
 
   if (isPending)
     return (
-      <div className="text-lg mx-auto text-blue-500 text-center">
+      <div className="text-lg mx-auto text-blue-500 text-center p-10">
         Loading...
       </div>
     );
 
-  if (error) return "An error has occurred: " + error.message;
+  if (error)
+    return (
+      <div className="text-center text-red-500 text-lg">
+        An error has occurred: {error.message}
+      </div>
+    );
 
   return (
     <div className="flex justify-center items-center bg-gray-50 w-full ">
-      <div className="overflow-auto rounded-lg shadow-md bg-white">
+      <div className="w-full overflow-auto rounded-lg shadow-md bg-white">
         <table className="w-full border-collapse border border-gray-200 text-sm">
           {/* Table Header */}
           <thead>
@@ -193,25 +206,39 @@ export default function TanstackTable() {
 
           {/* Table Body */}
           <tbody>
-            {table.getRowModel().rows.map((row, rowIndex) => (
-              <tr
-                key={row.id}
-                className={
-                  rowIndex % 2 === 0
-                    ? "bg-gray-50 hover:bg-indigo-50"
-                    : "bg-white hover:bg-indigo-50"
-                }
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <td
-                    key={cell.id}
-                    className="px-6 py-6 border-y border-gray-200 text-gray-700"
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
+            {table.getRowModel().rows.length > 0 ? (
+              table.getRowModel().rows.map((row, rowIndex) => (
+                <tr
+                  key={row.id}
+                  className={
+                    rowIndex % 2 === 0
+                      ? "bg-gray-50 hover:bg-indigo-50"
+                      : "bg-white hover:bg-indigo-50"
+                  }
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <td
+                      key={cell.id}
+                      className="px-6 py-6 border-y border-gray-200 text-gray-700"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={columns.length}
+                  className="px-6 py-6 border-y border-gray-200 text-gray-700 text-center"
+                >
+                  No records found.
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
 

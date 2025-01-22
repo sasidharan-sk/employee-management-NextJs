@@ -10,7 +10,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { CustomMenuDropDown } from "../common/CustomMenuDropDown";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { CustomAlertDialog } from "../common/CustomAlertDialog";
 import { toast } from "react-toastify";
 import useDeleteEmployee from "@/customhooks/employees/useDeleteEmployee";
@@ -36,7 +36,7 @@ export default function TanstackTable({
     pageNumber: 1,
     pageSize: 10,
   });
-  const { data, isPending, error } = useFetchAllEmployees({
+  const { data, isPending, error, refetch } = useFetchAllEmployees({
     filterOn: filterColumn,
     filterQuery: searchQuery,
     sortOn: sorting.sortOn,
@@ -53,6 +53,20 @@ export default function TanstackTable({
     employeeName: "",
     empId: "",
   });
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      refetch();
+    };
+    window.addEventListener("AddEmployeeEvent", handleUpdate);
+    window.addEventListener("UpdateEmployeeEvent", handleUpdate);
+
+    // Cleanup the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("AddEmployeeEvent", handleUpdate);
+      window.removeEventListener("UpdateEmployeeEvent", handleUpdate);
+    };
+  }, [refetch]);
 
   const handleMenuClick = (
     option: string,
@@ -375,7 +389,11 @@ export default function TanstackTable({
   return (
     <>
       <div className="flex justify-center items-center bg-gray-50 max-h-full  w-full flex-col ">
-        <div className="w-full overflow-auto rounded-lg shadow-md bg-white flex-1 scrollbar-thin">
+        <div
+          className="w-full overflow-auto rounded-lg shadow-lg bg-gradient-to-r from-black via-gray-900 to-gray-600 flex-1 
+    scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 
+    hover:scrollbar-thumb-gray-500 active:scrollbar-thumb-gray-700 transition-all duration-300 ease-in-out"
+        >
           <ScrollArea className="max-h-[647px]">
             <table className="relative w-full border-collapse border border-gray-200 text-sm">
               {/* Table Header */}

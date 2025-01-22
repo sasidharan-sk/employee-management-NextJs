@@ -71,6 +71,6 @@ export default {
   },
   plugins: [
     require("tailwindcss-animate"),
-    require("tailwind-scrollbar"), // Correct placement of the scrollbar plugin
+    require("tailwind-scrollbar")({ preferredStrategy: "pseudoelements" }), // default: 'standard'
   ],
 } satisfies Config;

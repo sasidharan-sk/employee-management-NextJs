@@ -109,9 +109,13 @@ export default function AddEmployeeForm({
         { id, body: values },
         {
           onSuccess: () => {
+            if (window.opener) {
+              const updateEvent = new Event("UpdateEmployeeEvent");
+              window.opener.dispatchEvent(updateEvent);
+            }
+
             toast.success("Employee updated successfully", {
               onClose: () => {
-                window.opener?.location.reload(true);
                 window.close();
               },
             });
@@ -124,9 +128,12 @@ export default function AddEmployeeForm({
     } else {
       mutateAdd(values, {
         onSuccess: () => {
+          if (window.opener) {
+            const addEvent = new Event("AddEmployeeEvent");
+            window.opener.dispatchEvent(addEvent);
+          }
           toast.success("Employee added successfully", {
             onClose: () => {
-              window.opener?.location.reload(true);
               window.close();
             },
           });

@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import Image from "next/image";
 import { IoIosCamera } from "react-icons/io";
 import { useForm } from "react-hook-form";
@@ -24,8 +25,8 @@ export default function ImageUpload({
   gender: string;
 }) {
   const profileImg =
-    url != "" ? encodeURI(url) : gender == "Male" ? maleImg : femaleImg;
-  const { mutate } = useEmployeeImageUpload();
+    url !== "" ? encodeURI(url) : gender === "Male" ? maleImg : femaleImg;
+  const { mutate, isPending } = useEmployeeImageUpload();
   const {
     setValue,
     handleSubmit,
@@ -54,7 +55,6 @@ export default function ImageUpload({
   };
 
   const onSubmit = (data: AddEmployeeImageSchema) => {
-    console.log("data :", data);
     const imageUploadRequest: ImageUploadRequest = {
       EmpId: data.EmpId,
       File: data.File,
@@ -76,17 +76,23 @@ export default function ImageUpload({
     <form className="flex flex-col items-center">
       {/* Image Upload Section */}
       <div className="relative p-[1px] bg-[#fdfdfd] w-14 h-14 rounded-full border-2 border-gray-400">
-        {/* Image Display */}
-
-        <Image
-          id={empId}
-          className="dark:invert rounded-full object-cover h-[100%] w-[100%]"
-          src={profileImg}
-          alt="Employee Manager Logo"
-          width={100}
-          height={100}
-          priority
-        />
+        {/* Spinner or Image */}
+        {isPending ? (
+          <div className="flex items-center justify-center w-full h-full">
+            {/* Spinner (customize as needed) */}
+            <div className="animate-spin w-4 h-4 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+          </div>
+        ) : (
+          <Image
+            id={empId}
+            className="dark:invert rounded-full object-cover h-[100%] w-[100%]"
+            src={profileImg}
+            alt="Employee Manager Logo"
+            width={100}
+            height={100}
+            priority
+          />
+        )}
 
         {/* Camera Icon to Trigger File Upload */}
         <Label

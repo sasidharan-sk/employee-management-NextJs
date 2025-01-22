@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import { IoIosCamera } from "react-icons/io";
 import { useForm } from "react-hook-form";

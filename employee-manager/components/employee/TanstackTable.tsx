@@ -15,9 +15,9 @@ import { CustomAlertDialog } from "../common/CustomAlertDialog";
 import { toast } from "react-toastify";
 import useDeleteEmployee from "@/customhooks/employees/useDeleteEmployee";
 import ImageUpload from "../common/ImageUpload";
-import { ArrowDown, ArrowUp } from "lucide-react";
 import { DataTablePagination } from "../common/DataTablePagination";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import SortIcon from "../common/SortIcon";
 
 type TanstackTableProps = {
   searchQuery: string;
@@ -150,20 +150,12 @@ export default function TanstackTable({
         header: ({ column }) => (
           <span className="flex items-center">
             First Name
-            <span
+            <SortIcon
+              columnId={column.id}
+              sortBy={sorting.sortBy}
+              sortOn={sorting.sortOn}
               onClick={() => handleSorting(column.id)}
-              className="ml-1 cursor-pointer"
-            >
-              {sorting.sortOn === column.id ? (
-                sorting.sortBy === "asc" ? (
-                  <ArrowUp size={20} strokeWidth={3} />
-                ) : (
-                  <ArrowDown size={20} strokeWidth={3} />
-                )
-              ) : (
-                <ArrowUp size={20} strokeWidth={1.5} />
-              )}
-            </span>
+            />
           </span>
         ),
         cell: (info) => info.getValue(),
@@ -173,20 +165,12 @@ export default function TanstackTable({
         header: ({ column }) => (
           <span className="flex items-center">
             Last Name
-            <span
+            <SortIcon
+              columnId={column.id}
+              sortBy={sorting.sortBy}
+              sortOn={sorting.sortOn}
               onClick={() => handleSorting(column.id)}
-              className="ml-1 cursor-pointer"
-            >
-              {sorting.sortOn === column.id ? (
-                sorting.sortBy === "asc" ? (
-                  <ArrowUp size={20} strokeWidth={3} />
-                ) : (
-                  <ArrowDown size={20} strokeWidth={3} />
-                )
-              ) : (
-                <ArrowUp size={20} strokeWidth={1.5} />
-              )}
-            </span>
+            />
           </span>
         ),
         cell: (info) => info.getValue(),
@@ -196,20 +180,12 @@ export default function TanstackTable({
         header: ({ column }) => (
           <span className="flex items-center">
             Gender
-            <span
+            <SortIcon
+              columnId={column.id}
+              sortBy={sorting.sortBy}
+              sortOn={sorting.sortOn}
               onClick={() => handleSorting(column.id)}
-              className="ml-1 cursor-pointer"
-            >
-              {sorting.sortOn === column.id ? (
-                sorting.sortBy === "asc" ? (
-                  <ArrowUp size={20} strokeWidth={3} />
-                ) : (
-                  <ArrowDown size={20} strokeWidth={3} />
-                )
-              ) : (
-                <ArrowUp size={20} strokeWidth={1.5} />
-              )}
-            </span>
+            />
           </span>
         ),
         cell: (info) => info.getValue(),
@@ -219,20 +195,12 @@ export default function TanstackTable({
         header: ({ column }) => (
           <span className="flex items-center">
             Date of Birth
-            <span
+            <SortIcon
+              columnId={column.id}
+              sortBy={sorting.sortBy}
+              sortOn={sorting.sortOn}
               onClick={() => handleSorting(column.id)}
-              className="ml-1 cursor-pointer"
-            >
-              {sorting.sortOn === column.id ? (
-                sorting.sortBy === "asc" ? (
-                  <ArrowUp size={20} strokeWidth={3} />
-                ) : (
-                  <ArrowDown size={20} strokeWidth={3} />
-                )
-              ) : (
-                <ArrowUp size={20} strokeWidth={1.5} />
-              )}
-            </span>
+            />
           </span>
         ),
         cell: (info) =>
@@ -243,20 +211,12 @@ export default function TanstackTable({
         header: ({ column }) => (
           <span className="flex items-center">
             Email
-            <span
+            <SortIcon
+              columnId={column.id}
+              sortBy={sorting.sortBy}
+              sortOn={sorting.sortOn}
               onClick={() => handleSorting(column.id)}
-              className="ml-1 cursor-pointer"
-            >
-              {sorting.sortOn === column.id ? (
-                sorting.sortBy === "asc" ? (
-                  <ArrowUp size={20} strokeWidth={3} />
-                ) : (
-                  <ArrowDown size={20} strokeWidth={3} />
-                )
-              ) : (
-                <ArrowUp size={20} strokeWidth={1.5} />
-              )}
-            </span>
+            />
           </span>
         ),
         cell: (info) => (
@@ -270,20 +230,12 @@ export default function TanstackTable({
         header: ({ column }) => (
           <span className="flex items-center">
             Phone
-            <span
+            <SortIcon
+              columnId={column.id}
+              sortBy={sorting.sortBy}
+              sortOn={sorting.sortOn}
               onClick={() => handleSorting(column.id)}
-              className="ml-1 cursor-pointer"
-            >
-              {sorting.sortOn === column.id ? (
-                sorting.sortBy === "asc" ? (
-                  <ArrowUp size={20} strokeWidth={3} />
-                ) : (
-                  <ArrowDown size={20} strokeWidth={3} />
-                )
-              ) : (
-                <ArrowUp size={20} strokeWidth={1.5} />
-              )}
-            </span>
+            />
           </span>
         ),
         cell: (info) => info.renderValue(),
@@ -293,20 +245,12 @@ export default function TanstackTable({
         header: ({ column }) => (
           <span className="flex items-center">
             Hire Date
-            <span
+            <SortIcon
+              columnId={column.id}
+              sortBy={sorting.sortBy}
+              sortOn={sorting.sortOn}
               onClick={() => handleSorting(column.id)}
-              className="ml-1 cursor-pointer"
-            >
-              {sorting.sortOn === column.id ? (
-                sorting.sortBy === "asc" ? (
-                  <ArrowUp size={20} strokeWidth={3} />
-                ) : (
-                  <ArrowDown size={20} strokeWidth={3} />
-                )
-              ) : (
-                <ArrowUp size={20} strokeWidth={1.5} />
-              )}
-            </span>
+            />
           </span>
         ),
         cell: (info) =>
@@ -317,20 +261,12 @@ export default function TanstackTable({
         header: ({ column }) => (
           <span className="flex items-center">
             Department
-            <span
+            <SortIcon
+              columnId={column.id}
+              sortBy={sorting.sortBy}
+              sortOn={sorting.sortOn}
               onClick={() => handleSorting(column.id)}
-              className="ml-1 cursor-pointer"
-            >
-              {sorting.sortOn === column.id ? (
-                sorting.sortBy === "asc" ? (
-                  <ArrowUp size={20} strokeWidth={3} />
-                ) : (
-                  <ArrowDown size={20} strokeWidth={3} />
-                )
-              ) : (
-                <ArrowUp size={20} strokeWidth={1.5} />
-              )}
-            </span>
+            />
           </span>
         ),
         cell: (info) => info.getValue(),

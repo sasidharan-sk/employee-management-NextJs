@@ -17,6 +17,7 @@ import useDeleteEmployee from "@/customhooks/employees/useDeleteEmployee";
 import ImageUpload from "../common/ImageUpload";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { DataTablePagination } from "../common/DataTablePagination";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 type TanstackTableProps = {
   searchQuery: string;
@@ -372,94 +373,103 @@ export default function TanstackTable({
     );
 
   return (
-    <div className="flex justify-center items-center bg-gray-50 w-full ">
-      <div className="w-full overflow-auto rounded-lg shadow-md bg-white">
-        <table className="w-full border-collapse border border-gray-200 text-sm">
-          {/* Table Header */}
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr
-                key={headerGroup.id}
-                className="bg-blue-500 text-white text-left w-full"
-              >
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="px-6 py-4 font-medium border-y border-gray-50 border-opacity-30"
+    <>
+      <div className="flex justify-center items-center bg-gray-50 max-h-full  w-full flex-col ">
+        <div className="w-full overflow-auto rounded-lg shadow-md bg-white flex-1 scrollbar-thin">
+          <ScrollArea className="max-h-[647px]">
+            <table className="relative w-full border-collapse border border-gray-200 text-sm">
+              {/* Table Header */}
+              <thead className="sticky top-0 z-10">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr
+                    key={headerGroup.id}
+                    className="bg-blue-500 text-white text-left w-full"
                   >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
+                    {headerGroup.headers.map((header) => (
+                      <th
+                        key={header.id}
+                        className="px-6 py-4 font-medium border-y border-gray-50 border-opacity-30"
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </th>
+                    ))}
+                  </tr>
                 ))}
-              </tr>
-            ))}
-          </thead>
+              </thead>
 
-          {/* Table Body */}
-          <tbody>
-            {table.getRowModel().rows.length > 0 ? (
-              table.getRowModel().rows.map((row, rowIndex) => (
-                <tr
-                  key={row.id}
-                  className={
-                    rowIndex % 2 === 0
-                      ? "bg-gray-50 hover:bg-indigo-50"
-                      : "bg-white hover:bg-indigo-50"
-                  }
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td
-                      key={cell.id}
-                      className="px-6 py-6 border-y border-gray-200 text-gray-700"
+              {/* Table Body */}
+              <tbody>
+                {table.getRowModel().rows.length > 0 ? (
+                  table.getRowModel().rows.map((row, rowIndex) => (
+                    <tr
+                      key={row.id}
+                      className={
+                        rowIndex % 2 === 0
+                          ? "bg-gray-50 hover:bg-indigo-50"
+                          : "bg-white hover:bg-indigo-50"
+                      }
                     >
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+                      {row.getVisibleCells().map((cell) => (
+                        <td
+                          key={cell.id}
+                          className="px-6 py-6 border-y border-gray-200 text-gray-700"
+                        >
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={columns.length}
+                      className="px-6 py-6 border-y border-gray-200 text-gray-700 text-center"
+                    >
+                      No records found.
                     </td>
-                  ))}
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={columns.length}
-                  className="px-6 py-6 border-y border-gray-200 text-gray-700 text-center"
-                >
-                  No records found.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-
-        <div className="flex flex-col gap-2.5">
-          <DataTablePagination
-            table={table}
-            onPageChange={(pageNumber, pageSize) =>
-              handlePagination(pageNumber, pageSize)
-            }
-            totalCount={totalCount}
-          />
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </ScrollArea>
         </div>
+
+        {/* Sticky Pagination at the bottom */}
+        <div className="sticky bottom-0 bg-white w-full py-2 z-10">
+          <div className="flex flex-col gap-2.5">
+            <DataTablePagination
+              table={table}
+              onPageChange={(pageNumber, pageSize) =>
+                handlePagination(pageNumber, pageSize)
+              }
+              totalCount={totalCount}
+            />
+          </div>
+        </div>
+
+        {/* Alert Dialog */}
+        {isAlertOpen && (
+          <CustomAlertDialog
+            content={
+              <>
+                Are you sure to delete <strong>{deleteReq.employeeName}</strong>
+                ?
+              </>
+            }
+            isOpen={isAlertOpen}
+            onConfirm={handleConfirmDelete}
+            onClose={handleAlertClose}
+          />
+        )}
       </div>
-      {/* Alert Dialog */}
-      {isAlertOpen && (
-        <CustomAlertDialog
-          content={
-            <>
-              Are you sure to delete <strong>{deleteReq.employeeName}</strong>?
-            </>
-          }
-          isOpen={isAlertOpen}
-          onConfirm={handleConfirmDelete}
-          onClose={handleAlertClose}
-        />
-      )}
-    </div>
+    </>
   );
 }

@@ -17,7 +17,7 @@ export default function BodyCardLayout() {
   const employees = data?.employees || [];
 
   return (
-    <div className="flex flex-col p-4 bg-background shadow-2xl drop-shadow-lg gap-4 min-h-screen">
+    <div className="flex flex-col p-4 bg-background shadow-2xl drop-shadow-lg gap-4 max-h-full overflow-hidden ">
       <FilterLayout
         onSearch={handleSearch}
         employees={employees} // Pass employees to FilterLayout

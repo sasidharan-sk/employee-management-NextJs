@@ -4,9 +4,14 @@ export const addEmployeeSchema = z.object({
   firstName: z.string().min(4, {
     message: "First name must be atleast 4 characters",
   }),
-  lastName: z.string().min(2, {
-    message: "Last name must be at least 2 characters",
-  }),
+  lastName: z
+    .string()
+    .max(20, {
+      message: "Last name must not exceed 20 characters",
+    })
+    .min(2, {
+      message: "Last name must be at least 2 characters",
+    }),
   gender: z.string().min(4, {
     message: "Please select the gender",
   }),

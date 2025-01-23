@@ -61,7 +61,11 @@ export default function AuthForm({ mode }: AuthFormProps) {
       });
     } else {
       mutateLogin(values, {
-        onSuccess: () => {
+        onSuccess: (data) => {
+          debugger;
+          const token = data.jwtToken;
+          localStorage.setItem("token", token);
+          console.log("JwtToken : ", token);
           toast.success("Login successful", {
             onClose: () => {
               router.push("/");

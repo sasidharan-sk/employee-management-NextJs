@@ -121,7 +121,7 @@ export default function AddEmployeeForm({
             });
           },
           onError: (error) => {
-            toast.error(`${error}`);
+            toast.error(`${error.details?.error},${error.message}`);
           },
         }
       );
@@ -139,7 +139,7 @@ export default function AddEmployeeForm({
           });
         },
         onError: (error) => {
-          toast.error(`${error}`);
+          toast.error(`${error.details?.error},${error.message}`);
         },
       });
     }

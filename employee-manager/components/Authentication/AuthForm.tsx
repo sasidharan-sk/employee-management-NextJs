@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -19,7 +19,14 @@ import useLogin from "@/customhooks/authentication/useLogin";
 import { z } from "zod";
 import { toast } from "react-toastify";
 import { Checkbox } from "../ui/checkbox";
-import { redirect, useRouter } from "next/navigation";
+import {
+  redirect,
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
+import { useSetCookie } from "cookies-next";
+import { ErrorAlertDialog } from "../common/ErrorAlertDialog";
 
 type AuthFormProps = {
   mode: string;
@@ -27,6 +34,7 @@ type AuthFormProps = {
 
 export default function AuthForm({ mode }: AuthFormProps) {
   const router = useRouter();
+  const setCookie = useSetCookie();
   const isSignUp = mode === "signup";
 
   const { mutate: mutateSignup } = useSignup();
@@ -40,6 +48,21 @@ export default function AuthForm({ mode }: AuthFormProps) {
     { id: "reader", label: "Reader" },
     { id: "writer", label: "Writer" },
   ];
+  const [isErrorDialog, setIsErrorDialog] = useState(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const error = searchParams.get("error"); // Get the error message from query parameters
+
+  function handleCloseDialog() {
+    setIsErrorDialog(false);
+    router.replace(pathname);
+  }
+
+  useEffect(() => {
+    if (error) {
+      setIsErrorDialog(true);
+    }
+  }, [error]);
 
   const form = useForm<SignUpSchema | LoginFormSchema>({
     reValidateMode: "onChange",
@@ -62,10 +85,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
     } else {
       mutateLogin(values, {
         onSuccess: (data) => {
-          debugger;
           const token = data.jwtToken;
-          localStorage.setItem("token", token);
-          console.log("JwtToken : ", token);
+          setCookie("JwtToken", token, { path: "/" });
           toast.success("Login successful", {
             onClose: () => {
               router.push("/");
@@ -199,6 +220,13 @@ export default function AuthForm({ mode }: AuthFormProps) {
           </button>
         </div>
       </div>
+      {isErrorDialog && (
+        <ErrorAlertDialog
+          content={error}
+          isOpen={isErrorDialog}
+          onClose={handleCloseDialog}
+        />
+      )}
     </div>
   );
 }

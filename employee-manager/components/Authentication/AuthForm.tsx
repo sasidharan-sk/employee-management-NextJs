@@ -51,7 +51,10 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [isErrorDialog, setIsErrorDialog] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const error = searchParams.get("error"); // Get the error message from query parameters
+  const error = searchParams.get("error");
+  const title = error?.includes("expired")
+    ? "Session Expired"
+    : "Access Denied";
 
   function handleCloseDialog() {
     setIsErrorDialog(false);
@@ -86,7 +89,11 @@ export default function AuthForm({ mode }: AuthFormProps) {
       mutateLogin(values, {
         onSuccess: (data) => {
           const token = data.jwtToken;
-          setCookie("JwtToken", token, { path: "/" });
+          setCookie("JwtToken", token, {
+            path: "/",
+            secure: true,
+            sameSite: "none",
+          });
           toast.success("Login successful", {
             onClose: () => {
               router.push("/");
@@ -222,6 +229,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
       </div>
       {isErrorDialog && (
         <ErrorAlertDialog
+          title={title}
           content={error}
           isOpen={isErrorDialog}
           onClose={handleCloseDialog}

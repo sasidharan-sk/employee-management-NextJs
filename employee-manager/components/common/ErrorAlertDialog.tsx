@@ -12,16 +12,22 @@ import {
 type AlertProps = {
   content: React.ReactNode;
   isOpen: boolean;
+  title: string;
   onClose: () => void;
 };
 
-export function ErrorAlertDialog({ content, isOpen, onClose }: AlertProps) {
+export function ErrorAlertDialog({
+  content,
+  isOpen,
+  title,
+  onClose,
+}: AlertProps) {
   return (
     <div className="z-50">
       <AlertDialog open={isOpen} onOpenChange={onClose}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Error</AlertDialogTitle>
+            <AlertDialogTitle>{title}</AlertDialogTitle>
             <AlertDialogDescription className="text-red-500">
               {content}
             </AlertDialogDescription>

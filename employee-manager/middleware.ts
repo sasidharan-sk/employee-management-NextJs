@@ -28,6 +28,8 @@ export default async function middleware(req: NextRequest) {
       const currentTime = Math.floor(Date.now() / 1000); // Get the current time in seconds
       if (currentTime > expirationTime) {
         // If the token has expired, redirect to the login page
+
+        await deleteCookie("UserName", { cookies });
         await deleteCookie("JwtToken", { cookies });
         const loginUrl = new URL("/login", req.url);
         loginUrl.searchParams.set(
@@ -39,6 +41,7 @@ export default async function middleware(req: NextRequest) {
     }
   } catch (error) {
     console.error("Error decoding token:", error);
+
     // If there's an error decoding the token, redirect to the login page
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("error", "Invalid token. Please log in again.");

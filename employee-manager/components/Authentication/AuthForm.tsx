@@ -80,6 +80,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
       mutateSignup(values, {
         onSuccess: (data) => {
           toast.success(`${data}, please login`);
+          redirect("/login");
         },
         onError: (error) => {
           toast.error(`${error.details?.error}: ${error.message}`);
@@ -90,6 +91,11 @@ export default function AuthForm({ mode }: AuthFormProps) {
         onSuccess: (data) => {
           const token = data.jwtToken;
           setCookie("JwtToken", token, {
+            path: "/",
+            secure: true,
+            sameSite: "none",
+          });
+          setCookie("UserName", values.username, {
             path: "/",
             secure: true,
             sameSite: "none",
@@ -120,7 +126,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+      <div className="w-full max-w-md bg-white p-6 rounded-lg shadow-md drop-shadow-md">
         <h2 className="text-xl font-semibold text-center mb-4">
           {isSignUp ? "Sign Up" : "Login"}
         </h2>

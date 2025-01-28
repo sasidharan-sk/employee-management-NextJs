@@ -385,7 +385,7 @@ export default function TanstackTable({
                   <tr>
                     <td
                       colSpan={columns.length}
-                      className="px-6 py-6 border-y border-gray-200 text-gray-700 text-center"
+                      className="px-6 py-6 border-y border-gray-200 text-gray-700 text-center bg-white hover:bg-indigo-50"
                     >
                       No records found.
                     </td>

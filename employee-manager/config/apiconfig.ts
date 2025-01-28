@@ -1,5 +1,5 @@
 // config/apiConfig.ts
-export const API_BASE_URL = "https://localhost:7258/api";
+export const API_BASE_URL = process.env.EMPLOYEE_BASE_URL;
 
 export const ENDPOINTS = {
   LOGIN: "/v1/Auth/Login",

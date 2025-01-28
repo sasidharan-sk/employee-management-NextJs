@@ -46,7 +46,7 @@ export default function TanstackTable({
   });
   const totalCount = data?.totalCount;
   const { mutate: mutateDelete } = useDeleteEmployee();
-  const menuOptions = ["Edit", "Delete"];
+  const menuOptions = useMemo(() => ["Edit", "Delete"], []);
   const [editFlag, setEditFlag] = useState(false);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [deleteReq, setDeleteReq] = useState({
@@ -68,27 +68,26 @@ export default function TanstackTable({
     };
   }, [refetch]);
 
-  const handleMenuClick = (
-    option: string,
-    id: string,
-    employeeName: string
-  ) => {
-    if (option === "Edit") {
-      setEditFlag(true);
-      window.open(
-        `/popup/employees?edit=${editFlag}&id=${id}`,
-        "_blank",
-        "resizable=yes,top=200,left=150,width=1000,height=560"
-      );
-    } else if (option === "Delete") {
-      setDeleteReq({
-        ...deleteReq,
-        employeeName: employeeName,
-        empId: id,
-      });
-      setIsAlertOpen(true);
-    }
-  };
+  const handleMenuClick = useMemo(
+    () => (option: string, id: string, employeeName: string) => {
+      if (option === "Edit") {
+        setEditFlag(true);
+        window.open(
+          `/popup/employees?edit=${editFlag}&id=${id}`,
+          "_blank",
+          "resizable=yes,top=200,left=150,width=1000,height=560"
+        );
+      } else if (option === "Delete") {
+        setDeleteReq({
+          ...deleteReq,
+          employeeName: employeeName,
+          empId: id,
+        });
+        setIsAlertOpen(true);
+      }
+    },
+    [editFlag, deleteReq] // Add dependencies here if needed
+  );
 
   const handleConfirmDelete = () => {
     mutateDelete(deleteReq.empId, {
@@ -289,7 +288,7 @@ export default function TanstackTable({
         },
       },
     ],
-    [handleMenuClick, sorting.sortBy, sorting.sortOn]
+    [handleMenuClick, menuOptions, sorting.sortBy, sorting.sortOn]
   );
 
   const table = useReactTable<Employee>({

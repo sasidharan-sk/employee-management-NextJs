@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
+ 
 import { ENDPOINTS } from "@/config/apiconfig";
 import { EmployeeApiResponse } from "@/types/employee/apiresponse";
 import { FilterAndSortEmployee } from "@/types/employee/get-employee";

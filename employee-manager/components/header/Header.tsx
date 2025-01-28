@@ -10,9 +10,21 @@ import {
 import { Button } from "../ui/button";
 import { deleteCookie, getCookie } from "cookies-next";
 import { redirect } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Header() {
-  const userName: string | null = getCookie("UserName") as string;
+  const [profileDetails, setProfileDetails] = useState<{
+    initials: string;
+    name: string;
+  }>({ initials: "", name: "" });
+
+  useEffect(() => {
+    const userName: string | null = getCookie("UserName") as string;
+    if (userName) {
+      const { initials, name } = getInitials(userName);
+      setProfileDetails({ initials, name });
+    }
+  }, []);
 
   // Function to generate initials from email
   function getInitials(email: string | null): {
@@ -31,8 +43,6 @@ export default function Header() {
 
     return { initials, name };
   }
-
-  const profileDetails = getInitials(userName);
 
   async function handleLogout() {
     await deleteCookie("JwtToken");
@@ -58,11 +68,17 @@ export default function Header() {
 
         <div>
           <nav className="flex items-center justify-end gap-4">
+            <Link href="/" className="hover:text-gray-200 transition">
+              Home
+            </Link>
+            <Link href="/employees" className="hover:text-gray-200 transition">
+              Employee List
+            </Link>
             <HoverCard>
               <HoverCardTrigger asChild>
                 <Avatar className="bg-white border-black">
                   <AvatarFallback className="text-blue-800 font-semibold cursor-context-menu">
-                    {profileDetails.initials}
+                    {profileDetails?.initials}
                   </AvatarFallback>
                 </Avatar>
               </HoverCardTrigger>
@@ -70,26 +86,22 @@ export default function Header() {
                 <div className="flex flex-col justify-center items-center space-y-3">
                   {/* Profile Name */}
                   <div className="text-md font-semibold text-gray-700 text-wrap">
-                    {profileDetails.name}
+                    {profileDetails?.name}
                   </div>
 
                   {/* Logout Button */}
-                  <Button
-                    variant="secondary"
-                    onClick={() => handleLogout()}
-                    className="hover:bg-gray-100 transition-all duration-200 shadow-sm hover:shadow-md"
-                  >
-                    Logout
-                  </Button>
+                  <div>
+                    <Button
+                      variant="secondary"
+                      onClick={() => handleLogout()}
+                      className="hover:bg-gray-100 transition-all duration-200 shadow-sm hover:shadow-md"
+                    >
+                      Logout
+                    </Button>
+                  </div>
                 </div>
               </HoverCardContent>
             </HoverCard>
-            <Link href="/" className="hover:text-gray-200 transition">
-              Home
-            </Link>
-            <Link href="/employees" className="hover:text-gray-200 transition">
-              Employee List
-            </Link>
           </nav>
         </div>
       </div>

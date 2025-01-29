@@ -324,12 +324,13 @@ export default function TanstackTable({
   return (
     <>
       <div className="flex justify-center items-center bg-gray-50 max-h-full  w-full flex-col ">
-        <div
-          className="w-full overflow-auto rounded-lg shadow-lg bg-gradient-to-r from-black via-gray-900 to-gray-600 flex-1 
-    scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 
-    hover:scrollbar-thumb-gray-500 active:scrollbar-thumb-gray-700 transition-all duration-300 ease-in-out"
-        >
-          <ScrollArea className="max-h-[647px]">
+        <div className="w-full h-full  shadow-lg pb-16">
+          <ScrollArea
+            className="max-h-[calc(100vh-210px)] overflow-auto bg-gradient-to-r from-black via-gray-900 to-gray-600 flex-1 
+    scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200    
+    hover:scrollbar-thumb-gray-500 active:scrollbar-thumb-gray-700 
+    transition-all duration-300 ease-in-out"
+          >
             <table className="relative w-full border-collapse border border-gray-200 text-sm">
               {/* Table Header */}
               <thead className="sticky top-0 z-10">
@@ -396,7 +397,7 @@ export default function TanstackTable({
         </div>
 
         {/* Sticky Pagination at the bottom */}
-        <div className="sticky bottom-0 bg-white w-full py-2 z-10">
+        <div className="absolute bottom-0 left-0 w-full bg-white shadow-md z-10 p-4">
           <div className="flex flex-col gap-2.5">
             <DataTablePagination
               table={table}

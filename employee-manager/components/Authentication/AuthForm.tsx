@@ -37,8 +37,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const setCookie = useSetCookie();
   const isSignUp = mode === "signup";
 
-  const { mutate: mutateSignup } = useSignup();
-  const { mutate: mutateLogin } = useLogin();
+  const { mutate: mutateSignup, isPending: isSignupLoad } = useSignup();
+  const { mutate: mutateLogin, isPending: isLoginLoad } = useLogin();
 
   const defaultValues = isSignUp
     ? { username: "", password: "", roles: [] }
@@ -215,6 +215,8 @@ export default function AuthForm({ mode }: AuthFormProps) {
 
             {/* Submit Button */}
             <Button
+              loading={isLoginLoad ? isLoginLoad : isSignupLoad}
+              disabled={isLoginLoad ? isLoginLoad : isSignupLoad}
               type="submit"
               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
             >
